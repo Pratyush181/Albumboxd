@@ -1,66 +1,78 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './SignUp.css';
 import logo from './assets/logo.svg'
 import Navbar from './components/Navbar';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function SignUp() {
 
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: ''
-  });
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData, [e.target.name]: e.target.value
+const Login = () => {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
     });
-  };
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState(''); //success or error
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
+    const handleChange = (e) => {
+        setFormData({
+            ...formData, [e.target.name]: e.target.value
+        });
+    };
 
-    try{
-      const response = await fetch('http://localhost:3000/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-      
-      const data = await response.json;
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage('');
+        setMessageType('');
 
-      if (response.ok){
-        setMessage('Account created!');
-        setFormData({username: '', email: '', password: ''});
-      } else {
-        setMessage(data.message || 'Something went wrong');
-      }
-    } catch{
-      setMessage('Network error. Please try again.');
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
+        try{
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok){
+                setMessage('Login successful!');
+                setMessageType('success');
+                setFormData({email: '', password: ''});
+
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // Navigate to home page after successful login
+                navigate('/');
+
+                console.log('User logged in:', data.user);
+            }else {
+                setMessage(data.message || "login failed");
+                setMessageType("error");
+            }
+        } catch (error){
+            setMessage('Network error. Please try again.');
+            setMessageType('error');
+            console.error('Error:', error);
+        } finally {
+            setLoading(false);
+        }
     }
-  };
 
 
-    return (
+    return(
         <>
         <Navbar></Navbar>
+
         <div className='signup-container flex h-screen'>
           <div className='signup-form w-1/2 flex flex-col items-center justify-center'>
                 <img src={logo} alt="logo" className='fill-white'/>
                 <br />
 
-                <h1 className='text-lg'>Let's Get Started</h1>   
+                <h1 className='text-lg'>Login to your account</h1>   
                 <br />
 
                 <form onSubmit={handleSubmit}>
@@ -69,18 +81,6 @@ function SignUp() {
                     <fieldset className="fieldset bg-black/10 border-[#1db9546f] hover:border-[#1db954cb] rounded-box w-xs border p-4">
                       
                       <legend className="fieldset-legend">Your details</legend>
-
-                      <label className="label">Username</label>
-                      <input 
-                            type="text" 
-                            id="username" 
-                            name="username"
-                            className="input focus:outline-none bg-[#212121]" 
-                            placeholder="Enter your username" 
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                      />
 
                       <label className="label">Email</label>
                       <input 
@@ -112,8 +112,14 @@ function SignUp() {
 
                     <div>
                       <button type="submit" disabled={loading} className="btn btn-soft btn-wide border-none bg-[#1db954] hover:bg-[#1db954bb]">
-                        {loading ? 'Creating Account...' : 'Sign Up'}
+                        {loading ? 'Logging In...' : 'Login'}
                       </button>
+                      <p style={{ 
+                        color: messageType === 'success' ? 'green' : 'red',
+                        marginTop: '10px'
+                        }}>
+                        {message}
+                    </p>
                     </div>
                    
               
@@ -127,9 +133,10 @@ function SignUp() {
           </div>
 
         </div>
-
         </>
-    );
-}    
+    )
+}
 
-export default SignUp;
+
+
+export default Login;

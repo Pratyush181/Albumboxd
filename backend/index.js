@@ -1,6 +1,7 @@
 const express = require('express');
 const app=express();
 const cors = require("cors");
+const bcrypt = require('bcrypt');
 const corsOptions = {
     origin: ["http://localhost:5173"],
 };
@@ -20,6 +21,8 @@ app.use(express.json()); // This parses JSON request bodies
 app.use(express.urlencoded({ extended: true })); // This parses URL-encoded bodies
 
 
+
+//Test User
 app.post('/test-user', async (req, res) => {
     try {
         const testUser = new User({
@@ -35,7 +38,11 @@ app.post('/test-user', async (req, res) => {
     }    
 });
 
+
+
+// Signup
 app.post('/api/signup', async (req, res) => {
+
   try {
     const { username, email, password } = req.body;
 
@@ -57,6 +64,52 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+
+//Login
+app.post('/api/login', async (req, res) => {
+  try {
+    console.log("Received login request:", req.body);
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+        received: { email: !!email, password: !!password }
+      });
+    }
+
+    // find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // compare passwords
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    console.log("User logged in successfully: ", { username: user.username, email: user.email });
+
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
+
+
+//Get users
 app.get('/users', async (req, res) => {
   try {
     const users = await User.find();
