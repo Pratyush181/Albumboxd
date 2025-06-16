@@ -14,7 +14,10 @@ mongoose.connect(mongoURI, {
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
 
+// Middleware
 app.use(cors(corsOptions));
+app.use(express.json()); // This parses JSON request bodies
+app.use(express.urlencoded({ extended: true })); // This parses URL-encoded bodies
 
 
 app.post('/test-user', async (req, res) => {
@@ -32,6 +35,28 @@ app.post('/test-user', async (req, res) => {
     }    
 });
 
+app.post('/api/signup', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    const existingUser = await User.findOne({email});
+    if (existingUser) {
+      return res.status(400).json({message:"User already exists"})
+    }
+
+    const newUser = new User({
+      username,
+      email,
+      password
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: 'User created successfully', user: { username, email }});
+  } catch (error){
+    res.status(500).json({ message:'Server error', error: error.message });
+  }
+});
+
 app.get('/users', async (req, res) => {
   try {
     const users = await User.find();
@@ -40,11 +65,6 @@ app.get('/users', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
-
-
-
-
 
 app.listen(3000, () =>{
     console.log("Server is running on port 3000");

@@ -1,7 +1,9 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
 
 html, body {
-  background-color: #18181b; /* even darker, or keep #242424 */
+  background-color: #1e1e1e; /* even darker, or keep #242424 */
   color: #fff;
   min-height: 100vh;
   margin: 0;
@@ -9,7 +11,7 @@ html, body {
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Arial, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 

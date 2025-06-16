@@ -1,1 +1,2 @@
-import tailwind from '@tailwindcss/vite'
+@import "tailwindcss";
+@plugin "daisyui";
