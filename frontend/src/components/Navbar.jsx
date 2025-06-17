@@ -10,7 +10,7 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     return (
-    <div className="navbar bg-[#212121] shadow-lg w-full px-4">
+    <div className="navbar backdrop-blur-lg w-full px-4 fixed top-0 z-50">
         <div className="navbar-start">
             <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
@@ -31,7 +31,7 @@ const Navbar = () => {
             </a>
         </div>
         <div className="navbar-end">
-            <button onClick={() => navigate('/signup')} className="btn btn-soft bg-[#1db954] hover:bg-[#1db954bb] mx-2 h-8">Sign Up</button>
+            <button onClick={() => navigate('/signup')} className="btn btn-soft bg-[#212121] hover:bg-[#1db954bb] mx-2 h-8">Sign Up</button>
             <button onClick={() => navigate('/login')} className="btn btn-soft bg-[#1db954] hover:bg-[#1db954bb] mx-2 h-8">Login</button>
         </div>
     </div>

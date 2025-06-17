@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-.signup-page {
+.login-page {
     background-image: url('./assets/background-img.png');
     background-size: cover;
     background-position: center;
@@ -10,7 +10,7 @@
     position: relative;
 }
 
-.signup-page::before {
+.login-page::before {
     content: '';
     position: absolute;
     top: 0;
@@ -21,7 +21,7 @@
     z-index: 1;
 }
 
-.signup-content {
+.login-content {
     position: relative;
     z-index: 2;
 } 

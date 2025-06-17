@@ -1,17 +1,40 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { UserProvider, useUser } from './UserContext.jsx';
 import SignUp from './SignUp.jsx';
 import Login from './Login.jsx';
+import Home from './Home.jsx';
+import ProtectedRoute from './ProtectedRoute.jsx';
 
 
 function App() {
   return (
-  <Router>
-    <Routes>
-      <Route path="/signup" element={<SignUp />} />
-      <Route path='/login' element={<Login />}></Route>
-    </Routes>
-  </Router>
+    <UserProvider>
+    <Router>
+      <div>
+        <Routes>
+          {/* Protected homepage */}
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/home" element={<Navigate to="/" replace />} />
+          
+          {/* Auth routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          
+          {/* Default redirect */}
+          <Route path="*" element={<Login />} />
+        </Routes>
+      </div>
+    </Router>
+  </UserProvider>
 
   );
 }

@@ -2,6 +2,8 @@ import logo from './assets/logo.svg'
 import Navbar from './components/Navbar';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Login.css';
+import { useUser } from './UserContext';
 
 
 
@@ -14,6 +16,8 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState(''); //success or error
+
+    const { login } = useUser();
 
     const handleChange = (e) => {
         setFormData({
@@ -43,7 +47,7 @@ const Login = () => {
                 setMessageType('success');
                 setFormData({email: '', password: ''});
 
-                localStorage.setItem('user', JSON.stringify(data.user));
+                login(data.user);
                 
                 // Navigate to home page after successful login
                 navigate('/');
@@ -67,8 +71,9 @@ const Login = () => {
         <>
         <Navbar></Navbar>
 
-        <div className='signup-container flex h-screen'>
-          <div className='signup-form w-1/2 flex flex-col items-center justify-center'>
+        <div className='login-page'>
+          <div className='login-content signup-container flex h-screen'>
+            <div className='signup-form w-1/2 flex flex-col items-center justify-center'>
                 <img src={logo} alt="logo" className='fill-white'/>
                 <br />
 
@@ -119,19 +124,19 @@ const Login = () => {
                         marginTop: '10px'
                         }}>
                         {message}
-                    </p>
+                      </p>
+                      <p>
+                        Don't have an account? <a href="/signup" className="text-[#031509c0] hover:underline">Sign Up</a>
+                      </p>
                     </div>
-                   
-              
                   </div>  
                 </form>           
+            </div>
 
+            <div className='signup-showcase w-1/2 flex items-center justify-center'>
+                <p className="text-white text-xl">right side</p>
+            </div>
           </div>
-
-          <div className='signup-showcase w-1/2 flex items-center justify-center'>
-              <p className="text-white text-xl">right side</p>
-          </div>
-
         </div>
         </>
     )

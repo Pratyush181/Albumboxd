@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './SignUp.css';
 import logo from './assets/logo.svg'
 import Navbar from './components/Navbar';
+import { useUser } from './UserContext';
+
 
 function SignUp() {
 
@@ -14,6 +16,9 @@ function SignUp() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  const { login } = useUser();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -35,15 +40,19 @@ function SignUp() {
         body: JSON.stringify(formData)
       });
       
-      const data = await response.json;
+      const data = await response.json();
 
       if (response.ok){
         setMessage('Account created!');
         setFormData({username: '', email: '', password: ''});
+
+        login(data.user);
+        navigate('/');
+
       } else {
         setMessage(data.message || 'Something went wrong');
       }
-    } catch{
+    } catch(error){
       setMessage('Network error. Please try again.');
       console.error('Error:', error);
     } finally {
@@ -55,7 +64,9 @@ function SignUp() {
     return (
         <>
         <Navbar></Navbar>
-        <div className='signup-container flex h-screen'>
+        <div className="signup-page">
+
+        <div className='signup-container signup-content flex h-screen'>
           <div className='signup-form w-1/2 flex flex-col items-center justify-center'>
                 <img src={logo} alt="logo" className='fill-white'/>
                 <br />
@@ -115,6 +126,10 @@ function SignUp() {
                         {loading ? 'Creating Account...' : 'Sign Up'}
                       </button>
                     </div>
+                    <br />
+                    <p>
+                      Already have an account? <a href="/login" className="text-[#041b0cd6] hover:underline">Login</a>
+                    </p>
                    
               
                   </div>  
@@ -126,6 +141,7 @@ function SignUp() {
               <p className="text-white text-xl">right side</p>
           </div>
 
+        </div>
         </div>
 
         </>
