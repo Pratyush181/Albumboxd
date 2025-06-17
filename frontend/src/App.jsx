@@ -6,6 +6,7 @@ import SignUp from './SignUp.jsx';
 import Login from './Login.jsx';
 import Home from './Home.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
+import SearchResults from './SearchResults.jsx';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             } 
           />
           <Route path="/home" element={<Navigate to="/" replace />} />
+          <Route path="/search" element={<SearchResults />} />
           
           {/* Auth routes */}
           <Route path="/login" element={<Login />} />

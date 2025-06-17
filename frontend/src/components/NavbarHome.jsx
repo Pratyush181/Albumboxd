@@ -11,6 +11,19 @@ const Navbar = () => {
 
     const navigate = useNavigate();
     const { user, logout } = useUser();
+    const [search, setSearch] = useState('');
+
+    // search
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const q = search.trim();
+        if (q) {
+            navigate(`/search?query=${encodeURIComponent(q)}`);
+            setSearch("");    //clear box after navigation
+        }
+    }
+
 
     return (
     
@@ -25,21 +38,30 @@ const Navbar = () => {
         <div className="navbar-center">
 
             {/* searchbox */}
-            <label className="input bg-transparent border-[#1db95491] hover:border-[#1db954e5] h-7 w-26 md:w-80 [820px]:w-80 lg:w-80 rounded-2xl">
-                    <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <g
-                        strokeLinejoin="round"
-                        strokeLinecap="round"
-                        strokeWidth="2.5"
-                        fill="none"
-                        stroke="currentColor"
-                        >
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.3-4.3"></path>
-                        </g>
-                    </svg>
-                    <input type="search" required placeholder="Search for albums, artists, or profiles" className="bg-transparent"/>
+            <form onSubmit={handleSubmit}>
+
+                <label className="input bg-transparent border-[#1db95491] hover:border-[#1db954e5] h-7 w-26 md:w-80 [820px]:w-80 lg:w-80 rounded-2xl">
+                        <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <g
+                            strokeLinejoin="round"
+                            strokeLinecap="round"
+                            strokeWidth="2.5"
+                            fill="none"
+                            stroke="currentColor"
+                            >
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.3-4.3"></path>
+                            </g>
+                        </svg>
+                        <input 
+                            type="search" 
+                            required placeholder="Search for albums, artists, or profiles" 
+                            className="bg-transparent"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                 </label>
+            </form>    
         </div>
 
         <div className="navbar-end">

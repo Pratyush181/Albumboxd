@@ -8,6 +8,8 @@ const corsOptions = {
 const User = require("./models/User");
 const mongoose = require("mongoose");
 const mongoURI = "mongodb+srv://Pratyush:pratmongopassword@users.axtqgnr.mongodb.net/?retryWrites=true&w=majority&appName=Users"
+const spotifyRoutes = require("./routes/spotify");
+
 
 // connect to MongoDB
 mongoose.connect(mongoURI, {
@@ -19,6 +21,8 @@ mongoose.connect(mongoURI, {
 app.use(cors(corsOptions));
 app.use(express.json()); // This parses JSON request bodies
 app.use(express.urlencoded({ extended: true })); // This parses URL-encoded bodies
+
+
 
 
 
@@ -105,6 +109,10 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
+//Spotify Routes
+app.use("/api", spotifyRoutes);
+
 
 
 
