@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import NavbarHome from "./components/NavbarHome";
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();
@@ -22,6 +23,11 @@ const SearchResults = () => {
   if (!albums.length) return <div className="mt-24 text-center text-white">No albums found.</div>;
 
   return (
+
+    <>
+
+    <NavbarHome />
+
     <div className="mt-24 p-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
       {albums.map((alb) => (
         <div key={alb.id} className="bg-white/5 rounded-xl p-3">
@@ -32,6 +38,8 @@ const SearchResults = () => {
         </div>
       ))}
     </div>
+
+    </>
   );
 };
 

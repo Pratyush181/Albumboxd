@@ -30,7 +30,7 @@ const Navbar = () => {
     <div className="navbar backdrop-blur-lg w-full px-4 fixed top-0 z-50">
 
         <div className="navbar-start">
-            <a className="btn btn-ghost text-xl">                
+            <a className="btn btn-ghost text-xl" href='/home'>                
                 <img src={logo} alt="logo" className='fill-white lg:h-8 h-5'/>
             </a>
         </div>

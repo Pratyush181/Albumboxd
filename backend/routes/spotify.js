@@ -12,7 +12,7 @@ let tokenExpiry = 0;
 async function getAccessToken() {
   if (accessToken && Date.now() < tokenExpiry) return accessToken;
 
-  const response = await axios.post(
+  const { data } = await axios.post(
     "https://accounts.spotify.com/api/token",
     new URLSearchParams({ grant_type: "client_credentials" }),
     {
@@ -27,40 +27,52 @@ async function getAccessToken() {
     }
   );
 
-  accessToken = response.data.access_token;
-  tokenExpiry = Date.now() + response.data.expires_in * 1000 - 5000;
+  accessToken = data.access_token;
+  tokenExpiry = Date.now() + data.expires_in * 1000 - 5000;
   return accessToken;
 }
 
-// /api/search?query=damn kendrick
+// /api/search?query=
 router.get("/search", async (req, res) => {
   const query = req.query.query;
   if (!query) return res.status(400).json({ error: "No query provided" });
 
   try {
     const token = await getAccessToken();
-    const response = await axios.get("https://api.spotify.com/v1/search", {
+    const { data } = await axios.get("https://api.spotify.com/v1/search", {
       headers: { Authorization: `Bearer ${token}` },
       params: {
         q: query,
         type: "album",
-        limit: 10,
+        limit: 20,
       },
     });
 
-    const albums = response.data.albums.items.map((album) => ({
-      id: album.id,
-      name: album.name,
-      artist: album.artists.map((a) => a.name).join(", "),
-      cover: album.images?.[0]?.url || null,
-      release_date: album.release_date,
-    }));
+    const albums = [];
+    const seen = new Set(); // key = strippedName + artist
+
+    data.albums.items.forEach((album) => {
+      const key =
+        (album.name) + "-" + (album.artists[0]?.name || "").toLowerCase();
+      if (seen.has(key)) return; // skip alternate versions
+      seen.add(key);
+
+      albums.push({
+        id:           album.id,
+        name:         album.name,
+        artist:       album.artists.map((a) => a.name).join(", "),
+        cover:        album.images?.[0]?.url ?? null,
+        release_date: album.release_date,
+      });
+    });
+    /* ----------------------------------------------- */
 
     res.json({ albums });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Spotify search failed" });
+    console.error("Spotify search failed:", err.response?.data || err.message);
+    res.status(502).json({ error: "Spotify search failed" });
   }
 });
+
 
 module.exports = router;
