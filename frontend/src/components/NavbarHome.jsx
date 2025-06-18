@@ -31,7 +31,7 @@ const Navbar = () => {
 
         <div className="navbar-start">
             <a className="btn btn-ghost text-xl" href='/home'>                
-                <img src={logo} alt="logo" className='fill-white lg:h-8 h-5'/>
+                <img src={logo} alt="logo" className='fill-white h-4 md:h-6 lg:h-8 '/>
             </a>
         </div>
 

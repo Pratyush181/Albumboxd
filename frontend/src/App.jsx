@@ -7,6 +7,7 @@ import Login from './Login.jsx';
 import Home from './Home.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import SearchResults from './SearchResults.jsx';
+import AlbumDetail from './AlbumDetail.jsx';
 
 
 function App() {
@@ -19,9 +20,7 @@ function App() {
           <Route 
             path="/" 
             element={
-              <ProtectedRoute>
                 <Home />
-              </ProtectedRoute>
             } 
           />
           <Route path="/home" element={<Navigate to="/" replace />} />
@@ -32,7 +31,15 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           
           {/* Default redirect */}
-          <Route path="*" element={<Login />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+
+          {/* Album detail route */}
+          <Route 
+            path="/album/:albumId" 
+            element={
+                <AlbumDetail />
+            }
+          />
         </Routes>
       </div>
     </Router>

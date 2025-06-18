@@ -9,6 +9,9 @@ const User = require("./models/User");
 const mongoose = require("mongoose");
 const mongoURI = "mongodb+srv://Pratyush:pratmongopassword@users.axtqgnr.mongodb.net/?retryWrites=true&w=majority&appName=Users"
 const spotifyRoutes = require("./routes/spotify");
+const Album = require('./models/Album');
+const ratingRoutes = require('./routes/ratings');
+
 
 
 // connect to MongoDB
@@ -114,6 +117,25 @@ app.post('/api/login', async (req, res) => {
 app.use("/api", spotifyRoutes);
 
 
+//test album data daving
+app.post('/test-album', async (req, res) => {
+  try {
+    const testAlbum = new Album({
+      spotifyId: '4aawyAB9mqN3uQ7FjRGTy',
+      title: 'Global Warming',
+      artist: 'Pitbull',
+      imageUrl: 'https://example.com/image.jpg'
+    });
+    
+    const savedAlbum = await testAlbum.save();
+    res.json(savedAlbum);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Ratings Routes
+app.use('/api', ratingRoutes);
 
 
 
@@ -130,3 +152,4 @@ app.get('/users', async (req, res) => {
 app.listen(3000, () =>{
     console.log("Server is running on port 3000");
 });
+
