@@ -13,6 +13,9 @@ export default defineConfig({
   [
     react(), tailwindcss()
   ],
+  optimizeDeps: {
+    exclude: ['react-rating-stars-component']
+  }
 })
 
 

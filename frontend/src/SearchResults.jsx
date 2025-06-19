@@ -34,7 +34,7 @@ const SearchResults = () => {
 
     <>
 
-    <div className="search-info">
+    <div className="search-info bg-gradient-to-b from-zinc-900 via-zinc-800 to-[#1db95410] min-h-screen">
 
     <div className="search-content mt-16 p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
     <NavbarHome />

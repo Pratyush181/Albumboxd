@@ -52,6 +52,50 @@ const albumSchema = new mongoose.Schema({
         }],
         default: []
     },
+    averageRating: {
+        type: Number,
+        default: 0
+    },
+    ratingsCount: {
+        type: Number,
+        default: 0
+    }, 
+    // allratings: {
+    //     type: [{
+    //         userId: {
+    //             type: mongoose.Schema.Types.ObjectId,
+    //             ref: 'User',
+    //             required: true
+    //         },
+    //         rating: {
+    //             type: Number,
+    //             required: true
+    //         },
+    //         createdAt: {
+    //             type: Date,
+    //             default: Date.now
+    //         }
+    //     }],
+    //     default: []
+    // },
+    // reviews: {
+    //     type: [{
+    //         userId: {
+    //             type: mongoose.Schema.Types.ObjectId,
+    //             ref: 'User',
+    //             required: true
+    //         },
+    //         review: {
+    //             type: String,
+    //             required: true
+    //         },
+    //         createdAt: {
+    //             type: Date,
+    //             default: Date.now
+    //         }
+    //     }],
+    //     default: []
+    // }
 }, 
 {
     timestamps: true

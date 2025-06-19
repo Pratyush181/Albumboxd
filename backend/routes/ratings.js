@@ -1,54 +1,68 @@
 const express = require('express');
 const router = express.Router();
+const Album = require('../models/Album.js');
+const Rating = require('../models/Rating.js')
 
-
-router.post('/ratings', async (req, res) => {
-    try {
-        
-        const { userId, albumId, rating, review } = req.body;
-
-        // check if rating is valid
-        const validRatings = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-        if (!validRatings.includes(rating)) {
-            return res.status(400).json({ 
-                message: 'Invalid rating value. Must be one of: 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, or 5.' 
-            });
-        }
-
-        // Check if user already rated this album
-        const existingRating = await Rating.findOne({ userId, albumId });
-
-        if (existingRating) {
-        // Update existing rating
-        existingRating.rating = rating;
-        existingRating.review = review || '';
-        await existingRating.save();
-        
-        res.json({ 
-            message: 'Rating updated successfully', 
-            rating: existingRating 
-        });
-        } else {
-        // Create new rating
-        const newRating = new Rating({
-            userId,
-            albumId,
-            rating,
-            review: review || ''
-        });
-        await newRating.save();
-        
-        res.status(201).json({ 
-            message: 'Rating created successfully', 
-            rating: newRating 
-        });
-        }
-
-    } catch (error) {
-        console.error('Error in creating ratings:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+// post /api/ratings
+router.post('/', async (req, res) => {
+    const { userId, albumId, rating } = req.body;
+    if (!userId || !albumId || !rating) {
+        return res.status(400).json({error: 'Missing required fields'})
     }
-})
+    try {
+        const userRating = await Rating.findOneAndUpdate(
+            { userId, albumId },
+            { rating },
+            { upsert: true, new: true }
+        );
 
+        const allRatings = await Rating.find({ albumId });
+        const ratingsCount = allRatings.length;
+        const averageRating = allRatings.reduce((sum, r) => sum + r.rating, 0) / (ratingsCount || 1);
+
+        await Album.findOneAndUpdate(
+            { spotifyId: albumId },
+            { averageRating, ratingsCount }
+        );
+
+        res.json(userRating);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/ratings/:albumId?userId=... (users rating for an album)
+router.get('/:albumId', async (req, res) => {
+    const { userId } = req.query;
+    if (!userId){
+        return res.status(400).json({error: 'Missing userId in query'});
+    }
+    try {
+        const rating = await Rating.findOne({ albumId: req.params.albumId, userId });
+        res.json(rating);
+    } catch (error) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/ratings/album/:albumId (all ratings for an album)
+router.get('/album/:albumId', async (req, res) => {
+    try {
+        const ratings = await Rating.find({ albumId: req.params.albumId }).populate('userId', 'username');
+        res.json(ratings);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/ratings/user/:userId
+router.get('/user/:userId', async (req, res) => {
+    try {
+      const ratings = await Rating.find({ userId: req.params.userId }) 
+      res.json(ratings);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+});
 
 module.exports = router;

@@ -65,7 +65,10 @@ app.post('/api/signup', async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: 'User created successfully', user: { username, email }});
+    res.status(201).json({ 
+      message: 'User created successfully', 
+      user: { _id: newUser._id, username, email }
+    });
   } catch (error){
     res.status(500).json({ message:'Server error', error: error.message });
   }
@@ -103,6 +106,7 @@ app.post('/api/login', async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       user: {
+        _id: user._id,
         username: user.username,
         email: user.email
       }
@@ -135,9 +139,7 @@ app.post('/test-album', async (req, res) => {
 });
 
 // Ratings Routes
-app.use('/api', ratingRoutes);
-
-
+app.use('/api/ratings', ratingRoutes);
 
 //Get users
 app.get('/users', async (req, res) => {

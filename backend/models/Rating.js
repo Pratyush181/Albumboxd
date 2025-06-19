@@ -7,19 +7,17 @@ const ratingSchema = new mongoose.Schema({
         required: true
       },
       albumId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'Album',
         required: true
       },
       rating: {
         type: Number,
         required: true,
-        min: 1,
-        max: 5
       },
-      review: {
-        type: String,
-        default: ""
+      createdAt: {
+        type: Date,
+        default: Date.now
       }
     }, {
       timestamps: true
