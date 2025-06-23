@@ -78,24 +78,24 @@ const albumSchema = new mongoose.Schema({
     //     }],
     //     default: []
     // },
-    // reviews: {
-    //     type: [{
-    //         userId: {
-    //             type: mongoose.Schema.Types.ObjectId,
-    //             ref: 'User',
-    //             required: true
-    //         },
-    //         review: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         createdAt: {
-    //             type: Date,
-    //             default: Date.now
-    //         }
-    //     }],
-    //     default: []
-    // }
+    reviews: {
+        type: [{
+            userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
+            review: {
+                type: String,
+                required: true
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now
+            }
+        }],
+        default: []
+    }
 }, 
 {
     timestamps: true

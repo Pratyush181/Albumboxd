@@ -11,7 +11,8 @@ const mongoURI = "mongodb+srv://Pratyush:pratmongopassword@users.axtqgnr.mongodb
 const spotifyRoutes = require("./routes/spotify");
 const Album = require('./models/Album');
 const ratingRoutes = require('./routes/ratings');
-
+const Review = require('./models/Review.js')
+const reviewRoutes = require('./routes/reviews');
 
 
 // connect to MongoDB
@@ -140,6 +141,9 @@ app.post('/test-album', async (req, res) => {
 
 // Ratings Routes
 app.use('/api/ratings', ratingRoutes);
+
+// Reviews Routes
+app.use('/api/reviews', reviewRoutes);
 
 //Get users
 app.get('/users', async (req, res) => {

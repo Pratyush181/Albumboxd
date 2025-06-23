@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const StarRating = ({ initialRating = 0, onRatingChange }) => {
+const StarRating = ({ initialRating = 0, onRatingChange, readOnly = false }) => {
     const [rating, setRating] = useState(initialRating);
-    const [hoverRating, setHoverRating] = useState(null);  // Changed name to be clearer
+    const [hoverRating, setHoverRating] = useState(null);
+
+    // Keep in sync if initialRating changes (for readOnly mode)
+    useEffect(() => {
+        setRating(initialRating);
+    }, [initialRating]);
 
     const getStarFillState = (starNumber) => {
-        const currentRating = hoverRating ?? rating;  // Use hover rating if available, otherwise use actual rating
+        const currentRating = hoverRating ?? rating;
         if (currentRating >= starNumber) return 'full';
         if (currentRating + 0.5 === starNumber) return 'half';
         return 'empty';
     };
 
     const handleStarClick = (event, starNumber) => {
+        if (readOnly) return;
         const rect = event.currentTarget.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const isHalfStar = mouseX < rect.width / 2;
-        
         const newRating = isHalfStar ? starNumber - 0.5 : starNumber;
         const finalRating = newRating === rating ? 0 : newRating;
-        
         setRating(finalRating);
         onRatingChange?.(finalRating);
     };
 
-
     const handleStarMouseMove = (event, starNumber) => {
+        if (readOnly) return;
         const rect = event.currentTarget.getBoundingClientRect();
         const mouseX = event.clientX - rect.left;
         const isHalfStar = mouseX < rect.width / 2;
@@ -32,7 +36,7 @@ const StarRating = ({ initialRating = 0, onRatingChange }) => {
     };
 
     const getStarFill = (fillState) => {
-        switch(fillState) {
+        switch (fillState) {
             case 'full': return '#1DB954';
             case 'half': return 'url(#halfStarGradient)';
             default: return 'none';
@@ -52,12 +56,16 @@ const StarRating = ({ initialRating = 0, onRatingChange }) => {
             {[1, 2, 3, 4, 5].map((starNumber) => {
                 const fillState = getStarFillState(starNumber);
                 return (
-                    <button 
+                    <button
                         key={starNumber}
-                        className="cursor-pointer w-8 h-8 relative"
-                        onClick={(e) => handleStarClick(e, starNumber)}
-                        onMouseMove={(e) => handleStarMouseMove(e, starNumber)}
-                        onMouseLeave={() => setHoverRating(null)}
+                        className={`w-8 h-8 relative ${readOnly ? 'cursor-default' : 'cursor-pointer'}`}
+                        onClick={e => handleStarClick(e, starNumber)}
+                        onMouseMove={e => handleStarMouseMove(e, starNumber)}
+                        onMouseLeave={() => !readOnly && setHoverRating(null)}
+                        tabIndex={readOnly ? -1 : 0}
+                        type="button"
+                        disabled={readOnly}
+                        aria-label={readOnly ? undefined : `Rate ${starNumber} star${starNumber > 1 ? 's' : ''}`}
                     >
                         <svg
                             viewBox="0 0 24 24"

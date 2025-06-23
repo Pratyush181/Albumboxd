@@ -4,6 +4,7 @@ import NavbarHome from './components/NavbarHome';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';
 import StarRating from './components/StarRating';
 import { useUser } from './UserContext';
+import ReviewSection from './components/ReviewSection';
 
 const AlbumDetail = () => {
     const { albumId } = useParams();
@@ -15,7 +16,7 @@ const AlbumDetail = () => {
     const { user, loading: userLoading } = useUser();
     const userId = user?._id; // This will be undefined if not logged in
 
-    console.log(userId);
+    // console.log(userId);
 
     useEffect(() => {
             // fetch album data
@@ -47,7 +48,8 @@ const AlbumDetail = () => {
                     release_date: data.releaseDate,
                     cover: data.imageUrl,
                     tracks: data.tracks || [],
-                    averageRating: data.averageRating
+                    averageRating: data.averageRating,
+                    ratingsCount: data.ratingsCount
                 });
             } else{
                 console.error('Failed to fetch album data:', data);
@@ -152,7 +154,9 @@ const AlbumDetail = () => {
                                 <StarRating
                                     initialRating={Math.round(album.averageRating * 2) / 2}
                                 />
-                                <p className='text-white/85'>{album.averageRating}</p>
+                                <p className='text-white/85'>{album.averageRating}
+                                    <span className='text-white/70 text-sm justify-center'>  ({album.ratingsCount})</span>
+                                </p>
 
                             </div>
                         </div>
@@ -162,6 +166,7 @@ const AlbumDetail = () => {
                     <p>No album found</p>
                 )}
             </div>
+            <ReviewSection albumId={albumId} />
         </div>
     );
 }

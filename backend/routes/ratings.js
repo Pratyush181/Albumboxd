@@ -50,7 +50,7 @@ router.get('/album/:albumId', async (req, res) => {
     try {
         const ratings = await Rating.find({ albumId: req.params.albumId }).populate('userId', 'username');
         res.json(ratings);
-    } catch (err) {
+    } catch (error) {
         res.status(500).json({ error: err.message });
     }
 });
@@ -60,7 +60,7 @@ router.get('/user/:userId', async (req, res) => {
     try {
       const ratings = await Rating.find({ userId: req.params.userId }) 
       res.json(ratings);
-    } catch (err) {
+    } catch (error) {
       res.status(500).json({ error: err.message });
     }
 });

@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import './Home.css';
 import Navbar from './components/NavbarHome';
 import { useUser } from './UserContext';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const { user, logout } = useUser();
+
+    const navigate = useNavigate();
+
 
     return (
         <>
@@ -14,19 +18,28 @@ const Home = () => {
 
             {/* user info */}
 
-            <div style={{
-            //   backgroundColor: '#f8f9fa',
-              padding: '100px',
-            //   borderRadius: '8px',
-            //   marginBottom: '20px',
-              color: 'white',
-            }}>
-              <h2>User Information</h2>
-              <p><strong>Username:</strong> {user?.username}</p>
-              <p><strong>Email:</strong> {user?.email}</p>
-            </div>
-
-
+            {user ? (
+              <div style={{
+                  padding: '100px',
+                  color: 'white',
+                }}>
+                  <h2>User Information</h2>
+                  <p><strong>Username:</strong> {user?.username}</p>
+                  <p><strong>Email:</strong> {user?.email}</p>
+                </div>
+            ) : (
+              <div style={{
+                padding: '100px',
+                color: 'white',
+              }}>
+                <p>Please sign in</p>
+                <div className='mt-4'>
+                    <button onClick={() => navigate('/signup')} className="btn btn-soft bg-[#212121] hover:bg-[#1db954bb] mx-2 h-8">Sign Up</button>
+                    <button onClick={() => navigate('/login')} className="btn btn-soft bg-[#1db954] hover:bg-[#1db954bb] mx-2 h-8">Login</button>
+                </div>
+              </div>
+              
+            )}
 
             {/* content display */}
 
