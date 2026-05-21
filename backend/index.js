@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const app=express();
 const cors = require("cors");
@@ -7,12 +8,13 @@ const corsOptions = {
 };
 const User = require("./models/User");
 const mongoose = require("mongoose");
-const mongoURI = "mongodb+srv://Pratyush:pratmongopassword@users.axtqgnr.mongodb.net/?retryWrites=true&w=majority&appName=Users"
+const mongoURI = process.env.MONGO_URI || "mongodb+srv://Pratyush:pratmongopassword@users.axtqgnr.mongodb.net/?retryWrites=true&w=majority&appName=Users";
 const spotifyRoutes = require("./routes/spotify");
 const Album = require('./models/Album');
 const ratingRoutes = require('./routes/ratings');
 const Review = require('./models/Review.js')
 const reviewRoutes = require('./routes/reviews');
+const profileRoutes = require('./routes/profile');
 
 
 // connect to MongoDB
@@ -144,6 +146,9 @@ app.use('/api/ratings', ratingRoutes);
 
 // Reviews Routes
 app.use('/api/reviews', reviewRoutes);
+
+// Profile Routes
+app.use('/api/profile', profileRoutes);
 
 //Get users
 app.get('/users', async (req, res) => {

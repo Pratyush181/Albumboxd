@@ -1,19 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const Album = require('../models/Album.js');
-const Rating = require('../models/Rating.js')
+const Rating = require('../models/Rating.js');
+const Review = require('../models/Review.js');
 
 // post /api/ratings
 router.post('/', async (req, res) => {
     const { userId, albumId, rating } = req.body;
-    if (!userId || !albumId || !rating) {
+    if (!userId || !albumId || typeof rating === 'undefined' || rating === null) {
         return res.status(400).json({error: 'Missing required fields'})
+    }
+    const ratingNum = Number(rating);
+    if (isNaN(ratingNum) || ratingNum < 0 || ratingNum > 100) {
+        return res.status(400).json({error: 'Rating must be between 0 and 100'})
     }
     try {
         const userRating = await Rating.findOneAndUpdate(
             { userId, albumId },
             { rating },
             { upsert: true, new: true }
+        );
+
+        // Sync with existing review if one exists
+        await Review.findOneAndUpdate(
+            { userId, albumId },
+            { rating }
         );
 
         const allRatings = await Rating.find({ albumId });
@@ -41,7 +52,7 @@ router.get('/:albumId', async (req, res) => {
         const rating = await Rating.findOne({ albumId: req.params.albumId, userId });
         res.json(rating);
     } catch (error) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -51,7 +62,7 @@ router.get('/album/:albumId', async (req, res) => {
         const ratings = await Rating.find({ albumId: req.params.albumId }).populate('userId', 'username');
         res.json(ratings);
     } catch (error) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -61,7 +72,7 @@ router.get('/user/:userId', async (req, res) => {
       const ratings = await Rating.find({ userId: req.params.userId }) 
       res.json(ratings);
     } catch (error) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: error.message });
     }
 });
 

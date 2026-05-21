@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SignUp.css';
-import logo from './assets/logo.svg'
+import logo from './assets/AlbumBoxdLogo.png'
 import Navbar from './components/Navbar';
 import { useUser } from './UserContext';
 
@@ -68,7 +68,7 @@ function SignUp() {
 
         <div className='signup-container signup-content flex h-screen'>
           <div className='signup-form w-1/2 flex flex-col items-center justify-center'>
-                <img src={logo} alt="logo" className='fill-white'/>
+                <img src={logo} alt="logo" className='h-8 md:h-10 object-contain'/>
                 <br />
 
                 <h1 className='text-lg'>Let's Get Started</h1>   

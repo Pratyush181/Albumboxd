@@ -8,6 +8,9 @@ import Home from './Home.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import SearchResults from './SearchResults.jsx';
 import AlbumDetail from './AlbumDetail.jsx';
+import ArtistDetail from './ArtistDetail.jsx';
+import UserProfile from './UserProfile.jsx';
+
 
 
 function App() {
@@ -40,6 +43,19 @@ function App() {
                 <AlbumDetail />
             }
           />
+
+          {/* Artist detail route */}
+          <Route 
+            path="/artist/:artistId" 
+            element={
+                <ArtistDetail />
+            }
+          />
+
+          {/* Profile & User routes */}
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/user/:username" element={<UserProfile />} />
+
         </Routes>
       </div>
     </Router>

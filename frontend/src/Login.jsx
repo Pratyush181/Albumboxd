@@ -1,4 +1,4 @@
-import logo from './assets/logo.svg'
+import logo from './assets/AlbumBoxdLogo.png'
 import Navbar from './components/Navbar';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -74,7 +74,7 @@ const Login = () => {
         <div className='login-page'>
           <div className='login-content signup-container flex h-screen'>
             <div className='signup-form w-1/2 flex flex-col items-center justify-center'>
-                <img src={logo} alt="logo" className='fill-white'/>
+                <img src={logo} alt="logo" className='h-8 md:h-10 object-contain'/>
                 <br />
 
                 <h1 className='text-lg'>Login to your account</h1>   

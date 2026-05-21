@@ -15,7 +15,32 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-    }, 
+    },
+    bio: {
+        type: String,
+        default: ""
+    },
+    avatarUrl: {
+        type: String,
+        default: ""
+    },
+    favorites: {
+        type: [{
+            spotifyId: { type: String, required: true },
+            title: { type: String, required: true },
+            artist: { type: String, required: true },
+            imageUrl: { type: String }
+        }],
+        default: []
+    },
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 }, {
     timestamps: true,
 })
