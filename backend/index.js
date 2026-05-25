@@ -15,6 +15,8 @@ const ratingRoutes = require('./routes/ratings');
 const Review = require('./models/Review.js')
 const reviewRoutes = require('./routes/reviews');
 const profileRoutes = require('./routes/profile');
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 // connect to MongoDB
@@ -49,6 +51,114 @@ app.post('/test-user', async (req, res) => {
 });
 
 
+
+// Google Auth Client ID Config Route
+app.get('/api/auth/google/client-id', (req, res) => {
+  res.json({ clientId: process.env.GOOGLE_CLIENT_ID });
+});
+
+// Google Auth Verification Route
+app.post('/api/auth/google/verify', async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ error: 'Missing Google ID Token' });
+  }
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    const { email, name, picture } = payload;
+
+    // Check if user exists in our DB
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({
+        registered: true,
+        user: {
+          _id: existingUser._id,
+          username: existingUser.username,
+          email: existingUser.email,
+          avatarUrl: existingUser.avatarUrl || picture
+        }
+      });
+    }
+
+    // New user signup flow - return payload for step-2 selection of unique username
+    res.json({
+      registered: false,
+      email,
+      name,
+      picture,
+      message: 'Choose a unique username to complete registration.'
+    });
+
+  } catch (error) {
+    console.error('Google verify failed:', error.message);
+    res.status(401).json({ error: 'Invalid Google ID Token' });
+  }
+});
+
+// Google Auth Complete Registration Route
+app.post('/api/auth/google/register', async (req, res) => {
+  const { token, username } = req.body;
+  if (!token || !username) {
+    return res.status(400).json({ error: 'Missing token or username' });
+  }
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    const { email, picture } = payload;
+
+    const cleanUsername = username.trim();
+    if (!cleanUsername) {
+      return res.status(400).json({ error: 'Username cannot be empty' });
+    }
+
+    // Enforce unique username
+    const existingUsername = await User.findOne({ username: { $regex: new RegExp(`^${cleanUsername}$`, 'i') } });
+    if (existingUsername) {
+      return res.status(400).json({ error: 'Username is already taken' });
+    }
+
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ error: 'Email is already registered' });
+    }
+
+    // Generate random secure fallback password
+    const securePlaceholderPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
+
+    const newUser = new User({
+      username: cleanUsername,
+      email,
+      password: securePlaceholderPassword,
+      avatarUrl: picture || '',
+      bio: ''
+    });
+
+    await newUser.save();
+    res.status(201).json({
+      message: 'Account created successfully',
+      user: {
+        _id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        avatarUrl: newUser.avatarUrl
+      }
+    });
+
+  } catch (error) {
+    console.error('Google register failed:', error.message);
+    res.status(401).json({ error: 'Failed to complete Google registration' });
+  }
+});
 
 // Signup
 app.post('/api/signup', async (req, res) => {
